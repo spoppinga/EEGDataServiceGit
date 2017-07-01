@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Common;
+using System.Data.SQLite;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Cors;
 using EEGDataService.Models;
@@ -13,16 +16,22 @@ namespace EEGDataService
     {
        
         private List<EEGData> test = new List<EEGData>();
+        private SQLiteService sqLiteService;
+
         [Route]
         [HttpGet]
-        public IEnumerable GetEEGData()
+        public async Task<IEnumerable> GetEEGData()
         {
+            await sqLiteService.GetEEGData();
+
             test.Add(new EEGData{Id = 1,RawData = 200});
+
             test.Add(new EEGData{Id = 2,RawData = 400});
             return test;
         }
 
-       
+        
+
 
         // POST api/values 
         public void Post([FromBody]string value)
