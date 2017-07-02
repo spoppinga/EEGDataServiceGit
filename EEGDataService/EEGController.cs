@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.SQLite;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Cors;
@@ -16,27 +18,26 @@ namespace EEGDataService
     {
        
         private List<EEGData> test = new List<EEGData>();
-        private SQLiteService sqLiteService;
+        private SQLiteService sqLiteService = new SQLiteService();
 
         [Route]
         [HttpGet]
         public async Task<IEnumerable> GetEEGData()
         {
-            await sqLiteService.GetEEGData();
-
-            test.Add(new EEGData{Id = 1,RawData = 200});
-
-            test.Add(new EEGData{Id = 2,RawData = 400});
-            return test;
+            var result = await sqLiteService.GetEEGData();
+            return result;
         }
 
-        
 
 
-        // POST api/values 
-        public void Post([FromBody]string value)
+
+        [Route]
+        [HttpPost]
+        public async Task<HttpResponseMessage> Post([FromBody]IEnumerable<EEGData> value)
         {
-            Console.WriteLine("Post method called with value = " + value);
+            
+            await sqLiteService.WriteEEGData(value);
+            return new HttpResponseMessage(HttpStatusCode.Created);
         }
 
         // PUT api/values/5 
